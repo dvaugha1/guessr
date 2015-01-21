@@ -5,10 +5,55 @@ require "camping"
 Camping.goes :Guessr
 
 module Guessr
-  module Models
+  module Model
     class Player < Base
       validates :name, presence: true, uniqueness: true
       # alternately: validates :name, presence: true
+    end
+
+    class Numgame < Base
+      validates :correct, presence: true
+
+      puts "Please guess a number."
+      correct = rand(0..100)
+      number = gets.chomp
+      guess = number.to_i
+
+      until guess == correct do
+        if guess < correct
+          puts "Your number was less than the correct number!  Please try again!"
+          print "Please guess a number:"
+          number = gets.chomp
+          guess = number.to_i
+        elsif guess > correct
+          puts "Your number was greater than the correct number!  Please try again!"
+          print "Please guess a number:"
+          number = gets.chomp
+          guess = number.to_i
+          if guess == correct
+            puts "Congratulations!"
+          end
+        end
+      end
+
+      class Basic_Schema < V 1.0
+        def self.up
+          create_table Player.table_name do |t|
+            t.string :name
+            t.timestamps
+          end
+
+          create_table Numgame.table_name do |t|
+          t.integer :correct
+          t.integer :guess
+          t.timestamps
+        end
+      end
+
+      def self.down
+        drop_table Player.table_name
+        drop_table Numgame.table_name
+      end
     end
 
     class Hangman < Base
